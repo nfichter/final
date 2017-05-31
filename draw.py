@@ -17,40 +17,39 @@ def scanline_convert(polygons, i, screen, zbuffer):
 	y0_set = False
 	y1_set = False
 	y2_set = False
-	for j in range(3):
-		if y_vals[j] == y0 and not y0_set:
-			if j == 0:
-				b = polygons[i]
-			if j == 1:
-				m = polygons[i]
-			if j == 2:
-				t = polygons[i]
-			y0_set = True
-		elif y_vals[j] == y1 and not y1_set:
-			if j == 0:
-				b = polygons[i+1]
-			if i == 1:
-				m = polygons[i+1]
-			if j == 2:
-				t = polygons[i+1]
-			y1_set = True
-		elif y_vals[j] == y2 and not y2_set:
-			if j == 0:
-				b = polygons[i+2]
-			if j == 1:
-				m = polygons[i+2]
-			if j == 2:
-				t = polygons[i+2]
-			y2_set = True
+	if y_vals[0] == y0:
+		b = polygons[i]
+	elif y_vals[0] == y1:
+		b = polygons[i+1]
+	else:
+		b = polygons[i+2]
+	if y_vals[1] == y0:
+		m = polygons[i]
+	elif y_vals[1] == y1:
+		m = polygons[i+1]
+	else:
+		m = polygons[i+2]
+	if y_vals[2] == y0:
+		t = polygons[i]
+	elif y_vals[2] == y1:
+		t = polygons[i+1]
+	else:
+		t = polygons[i+2]
 	start_y = b[1]
 	middle_y = m[1]
 	end_y = t[1]
 	start_x = b[0]
 	middle_x = m[0]
 	end_x = t[0]
-	delta_x_part_1 = (m[0]-b[0])/(m[1]-b[1])
-	delta_x_part_2 = (t[0]-m[0])/(t[1]-b[1])
-	delta_x_regular = (t[0]-b[0])/(t[1]-b[1])
+	delta_x_part_1 = 0
+	delta_x_part_2 = 0
+	delta_x_regular = 0
+	if m[1] - b[1] != 0:
+		delta_x_part_1 = (m[0]-b[0])/(m[1]-b[1])
+	if t[1] - m[1] != 0:
+		delta_x_part_2 = (t[0]-m[0])/(t[1]-m[1])
+	if t[1] - b[1] != 0:
+		delta_x_regular = (t[0]-b[0])/(t[1]-b[1])
 	current_y = start_y
 	current_x_1 = start_x
 	current_x_2 = start_x
@@ -66,7 +65,7 @@ def scanline_convert(polygons, i, screen, zbuffer):
 		current_y += 1
 		current_x_1 += delta_x_part_1
 		current_x_2 += delta_x_regular
-	while current_y <= top_y:
+	while current_y <= end_y:
 		draw_line(int(current_x_1),
 				  int(current_y),
 				  0,
