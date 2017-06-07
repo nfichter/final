@@ -4,7 +4,7 @@ from math import *
 from gmath import *
 import random
 
-def scanline_convert(polygons, i, screen, zbuffer):
+def scanline_convert(polygons, i, screen, zbuffer, color):
 	#find bottom, middle, top
 	y0 = polygons[i][1]
 	y1 = polygons[i+1][1]
@@ -35,6 +35,7 @@ def scanline_convert(polygons, i, screen, zbuffer):
 		t = polygons[i+1]
 	else:
 		t = polygons[i+2]
+	### FIX HOW IM CALCULATING TOP MIDDLE BOTTOM!!!
 	start_y = b[1]
 	middle_y = m[1]
 	end_y = t[1]
@@ -45,15 +46,14 @@ def scanline_convert(polygons, i, screen, zbuffer):
 	delta_x_part_2 = 0
 	delta_x_regular = 0
 	if m[1] - b[1] != 0:
-		delta_x_part_1 = (m[0]-b[0])/(m[1]-b[1])
+		delta_x_part_1 = (b[0]-m[0])/(b[1]-m[1])
 	if t[1] - m[1] != 0:
-		delta_x_part_2 = (t[0]-m[0])/(t[1]-m[1])
+		delta_x_part_2 = (m[0]-t[0])/(m[1]-t[1])
 	if t[1] - b[1] != 0:
-		delta_x_regular = (t[0]-b[0])/(t[1]-b[1])
+		delta_x_regular = (b[0]-t[0])/(b[1]-t[1])
 	current_y = start_y
 	current_x_1 = start_x
 	current_x_2 = start_x
-	color = [random.randint(0,255),random.randint(0,255),random.randint(0,255)]
 	while current_y < middle_y:
 		draw_line(int(current_x_1),
 				  int(current_y),
@@ -65,6 +65,8 @@ def scanline_convert(polygons, i, screen, zbuffer):
 		current_y += 1
 		current_x_1 += delta_x_part_1
 		current_x_2 += delta_x_regular
+	current_x_1 = middle_x
+	current_y = middle_y
 	while current_y <= end_y:
 		draw_line(int(current_x_1),
 				  int(current_y),
@@ -88,13 +90,18 @@ def draw_polygons( matrix, screen, zbuffer, color ):
 		return
 
 	point = 0	
+	color = [255,255,255]
 	while point < len(matrix) - 2:
+
+		color[0] = (color[0] + 1057) % 255
+		color[1] = (color[1] + 601) % 255
+		color[2] = (color[2] + 137) % 255
 
 		normal = calculate_normal(matrix, point)[:]
 		#print normal
 		if normal[2] > 0:
-			scanline_convert(matrix, point, screen, zbuffer)			
-			draw_line( int(matrix[point][0]),
+			scanline_convert(matrix, point, screen, zbuffer, color)			
+			'''draw_line( int(matrix[point][0]),
 					   int(matrix[point][1]),
 					   matrix[point][2],
 					   int(matrix[point+1][0]),
@@ -114,7 +121,7 @@ def draw_polygons( matrix, screen, zbuffer, color ):
 					   int(matrix[point+2][0]),
 					   int(matrix[point+2][1]),
 					   matrix[point+2][2],
-					   screen, zbuffer, color)	
+					   screen, zbuffer, color)'''
 		point+= 3
 
 
