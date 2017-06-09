@@ -17,25 +17,33 @@ def scanline_convert(polygons, i, screen, zbuffer, color):
 	y0_set = False
 	y1_set = False
 	y2_set = False
-	if y_vals[0] == y0:
+	if y_vals[0] == y0 and not y0_set:
 		b = polygons[i]
-	elif y_vals[0] == y1:
+		y0_set = True
+	elif y_vals[0] == y1 and not y1_set:
 		b = polygons[i+1]
-	else:
+		y1_set = True
+	elif y_vals[0] == y2 and not y2_set:
 		b = polygons[i+2]
-	if y_vals[1] == y0:
+		y2_set = True
+	if y_vals[1] == y0 and not y0_set:
 		m = polygons[i]
-	elif y_vals[1] == y1:
+		y0_set = True
+	elif y_vals[1] == y1 and not y1_set:
 		m = polygons[i+1]
-	else:
+		y1_set = True
+	elif y_vals[1] == y2 and not y2_set:
 		m = polygons[i+2]
-	if y_vals[2] == y0:
+		y2_set = True
+	if y_vals[2] == y0 and not y0_set:
 		t = polygons[i]
-	elif y_vals[2] == y1:
+		y0_set = True
+	elif y_vals[2] == y1 and not y1_set:
 		t = polygons[i+1]
-	else:
+		y1_set = True
+	elif y_vals[2] == y2 and not y2_set:
 		t = polygons[i+2]
-	### FIX HOW IM CALCULATING TOP MIDDLE BOTTOM!!!
+		y2_set = True
 	start_y = b[1]
 	middle_y = m[1]
 	end_y = t[1]
@@ -100,28 +108,7 @@ def draw_polygons( matrix, screen, zbuffer, color ):
 		normal = calculate_normal(matrix, point)[:]
 		#print normal
 		if normal[2] > 0:
-			scanline_convert(matrix, point, screen, zbuffer, color)			
-			'''draw_line( int(matrix[point][0]),
-					   int(matrix[point][1]),
-					   matrix[point][2],
-					   int(matrix[point+1][0]),
-					   int(matrix[point+1][1]),
-					   matrix[point+1][2],
-					   screen, zbuffer, color)
-			draw_line( int(matrix[point+2][0]),
-					   int(matrix[point+2][1]),
-					   matrix[point+2][2],
-					   int(matrix[point+1][0]),
-					   int(matrix[point+1][1]),
-					   matrix[point+1][2],
-					   screen, zbuffer, color)
-			draw_line( int(matrix[point][0]),
-					   int(matrix[point][1]),
-					   matrix[point][2],
-					   int(matrix[point+2][0]),
-					   int(matrix[point+2][1]),
-					   matrix[point+2][2],
-					   screen, zbuffer, color)'''
+			scanline_convert(matrix, point, screen, zbuffer, color)
 		point+= 3
 
 
