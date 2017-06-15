@@ -44,48 +44,63 @@ def scanline_convert(polygons, i, screen, zbuffer, color):
 	elif y_vals[2] == y2 and not y2_set:
 		t = polygons[i+2]
 		y2_set = True
-	start_y = b[1]
-	middle_y = m[1]
-	end_y = t[1]
 	start_x = b[0]
+	start_y = b[1]
+	start_z = b[2]
 	middle_x = m[0]
+	middle_y = m[1]
+	middle_z = m[2]
 	end_x = t[0]
+	end_y = t[1]
+	end_z = t[2]
 	delta_x_part_1 = 0
 	delta_x_part_2 = 0
 	delta_x_regular = 0
+	delta_z_part_1 = 0
+	delta_z_part_2 = 0
+	delta_z_regular = 0
 	if m[1] - b[1] != 0:
 		delta_x_part_1 = (b[0]-m[0])/(b[1]-m[1])
+		delta_z_part_1 = (b[2]-m[2])/(b[1]-m[1])
 	if t[1] - m[1] != 0:
 		delta_x_part_2 = (m[0]-t[0])/(m[1]-t[1])
+		delta_z_part_2 = (m[2]-t[2])/(m[1]-t[1])
 	if t[1] - b[1] != 0:
 		delta_x_regular = (b[0]-t[0])/(b[1]-t[1])
+		delta_z_regular = (m[2]-t[2])/(b[1]-t[1])
 	current_y = start_y
 	current_x_1 = start_x
 	current_x_2 = start_x
+	current_z_1 = start_z
+	current_z_2 = start_z
 	while current_y < middle_y:
-		draw_line(int(current_x_1),
-				  int(current_y),
-				  0,
-				  int(current_x_2),
-				  int(current_y),
-				  0,
+		draw_line(current_x_1,
+				  current_y,
+				  current_z_1,
+				  current_x_2,
+				  current_y,
+				  current_z_2,
 				  screen, zbuffer, color)
 		current_y += 1
 		current_x_1 += delta_x_part_1
 		current_x_2 += delta_x_regular
+		current_z_1 += delta_z_part_1
+		current_z_2 += delta_z_regular
 	current_x_1 = middle_x
 	current_y = middle_y
 	while current_y <= end_y:
-		draw_line(int(current_x_1),
-				  int(current_y),
-				  0,
-				  int(current_x_2),
-				  int(current_y),
-				  0,
+		draw_line(current_x_1,
+				  current_y,
+				  current_z_1,
+				  current_x_2,
+				  current_y,
+				  current_z_2,
 				  screen, zbuffer, color)
 		current_y += 1
 		current_x_1 += delta_x_part_2
 		current_x_2 += delta_x_regular
+		current_z_1 += delta_z_part_2
+		current_z_2 += delta_z_regular
 
 def add_polygon( polygons, x0, y0, z0, x1, y1, z1, x2, y2, z2 ):
 	add_point(polygons, x0, y0, z0);
@@ -313,9 +328,6 @@ def add_edge( matrix, x0, y0, z0, x1, y1, z1 ):
 	
 def add_point( matrix, x, y, z=0 ):
 	matrix.append( [x, y, z, 1] )
-	
-
-
 
 def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
 
